@@ -1,0 +1,26 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./.env:/app/.env
+      - arxiv-diff-data:/root/.arxiv-diff
+    restart: unless-stopped
+
+  watcher:
+    build: .
+    command: python -m arxiv_diff.main check
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./.env:/app/.env
+      - arxiv-diff-data:/root/.arxiv-diff
+    # In a real scenario, you'd use a cron-like mechanism or a while loop for the watcher.
+    # For now, this just runs once. To run periodically, one might use a simple loop.
+    restart: "no"
+
+volumes:
+  arxiv-diff-data:

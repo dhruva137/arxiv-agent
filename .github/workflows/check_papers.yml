@@ -1,0 +1,24 @@
+name: Periodic Paper Check
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Once a day at midnight
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        pip install .
+    - name: Run paper check
+      env:
+        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      run: |
+        arxiv-diff check
